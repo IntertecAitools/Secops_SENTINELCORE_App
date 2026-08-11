@@ -2,6 +2,7 @@ package com.sentinelcore.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -35,4 +36,19 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private Boolean enabled = true;
+
+    @Column
+    private String department;
+
+    @Column
+    private String phoneNumber;
+
+    @Column(columnDefinition = "TEXT")
+    private String profilePicture;
+
+    @Column
+    private LocalDateTime lastLogin;
+
+    @Column
+    private LocalDateTime createdAt;
 }

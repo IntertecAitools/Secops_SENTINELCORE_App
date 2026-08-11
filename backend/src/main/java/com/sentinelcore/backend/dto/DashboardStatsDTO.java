@@ -23,7 +23,23 @@ public class DashboardStatsDTO {
 
     private long criticalAssets;
 
+    private long totalAlerts;
+
+    private long criticalAlerts;
+
+    private long totalIncidents;
+
+    private long openIncidents;
+
+    private long totalVulnerabilities;
+
+    private long criticalVulnerabilities;
+
     private List<ChartData> assetDistribution;
+
+    private List<AlertDTO> recentAlerts;
+
+    private List<AuditLogDTO> recentActivities;
 
     @Data
     @Builder

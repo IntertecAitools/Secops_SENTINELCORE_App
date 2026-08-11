@@ -1,7 +1,10 @@
 import { Box } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 
 function MainLayout({ children }) {
+  const location = useLocation();
+
   return (
     <Box
       sx={{
@@ -12,6 +15,8 @@ function MainLayout({ children }) {
       <Navbar />
 
       <Box
+        key={location.pathname}
+        className="page-fade-in"
         component="main"
         sx={{
           width: "100%",

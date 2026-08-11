@@ -68,7 +68,8 @@ const getTheme = (mode) =>
         styleOverrides: {
           root: {
             borderRadius: 18,
-            transition: "all .3s ease",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            backgroundImage: "none",
           },
         },
       },
@@ -77,7 +78,15 @@ const getTheme = (mode) =>
         styleOverrides: {
           root: {
             borderRadius: 20,
-            transition: "0.35s",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            position: "relative",
+            "&:hover": {
+              transform: "translateY(-4px) translateZ(10px)",
+              boxShadow:
+                mode === "dark"
+                  ? "0 12px 30px -10px rgba(0, 200, 83, 0.2), 0 4px 20px rgba(0,0,0,0.5)"
+                  : "0 12px 30px -10px rgba(0, 0, 0, 0.12), 0 4px 15px rgba(0,0,0,0.06)",
+            },
           },
         },
       },
@@ -88,6 +97,28 @@ const getTheme = (mode) =>
             borderRadius: 12,
             padding: "10px 22px",
             fontWeight: 600,
+            transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+            "&:hover": {
+              transform: "translateY(-2px)",
+              boxShadow: "0 6px 20px rgba(0, 200, 83, 0.25)",
+            },
+            "&:active": {
+              transform: "translateY(0px) scale(0.98)",
+            },
+          },
+        },
+      },
+
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            transition: "all 0.25s ease",
+            "&:hover": {
+              transform: "scale(1.1) rotate(4deg)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
           },
         },
       },
@@ -97,6 +128,11 @@ const getTheme = (mode) =>
           root: {
             borderRadius: 10,
             fontWeight: 600,
+            transition: "all 0.2s ease",
+            "&:hover": {
+              transform: "scale(1.05)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            },
           },
         },
       },
@@ -105,6 +141,20 @@ const getTheme = (mode) =>
         defaultProps: {
           variant: "outlined",
           size: "small",
+        },
+        styleOverrides: {
+          root: {
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 12,
+              transition: "all 0.25s ease",
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: mode === "dark" ? "#00C853" : "#00C853",
+              },
+              "&.Mui-focused": {
+                boxShadow: "0 0 12px rgba(0, 200, 83, 0.3)",
+              },
+            },
+          },
         },
       },
 
@@ -115,6 +165,20 @@ const getTheme = (mode) =>
               mode === "dark"
                 ? "#1C2128"
                 : "#F3F4F6",
+          },
+        },
+      },
+
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            transition: "all 0.2s ease",
+            "&:hover": {
+              backgroundColor:
+                mode === "dark"
+                  ? "rgba(0, 200, 83, 0.06) !important"
+                  : "rgba(0, 200, 83, 0.04) !important",
+            },
           },
         },
       },

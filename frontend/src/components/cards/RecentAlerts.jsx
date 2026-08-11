@@ -18,47 +18,35 @@ import {
   SystemUpdate,
 } from "@mui/icons-material";
 
-const alerts = [
-  {
-    title: "SQL Injection Attempt",
-    severity: "Critical",
-    time: "2 min ago",
-    icon: <BugReport />,
-  },
-  {
-    title: "Malware Detected",
-    severity: "High",
-    time: "8 min ago",
-    icon: <Security />,
-  },
-  {
-    title: "Multiple Failed Logins",
-    severity: "Medium",
-    time: "18 min ago",
-    icon: <WarningAmber />,
-  },
-  {
-    title: "System Update Available",
-    severity: "Low",
-    time: "1 hour ago",
-    icon: <SystemUpdate />,
-  },
-];
+const getIcon = (category) => {
+  switch (category?.toLowerCase()) {
+    case "malware":
+      return <Security />;
+    case "vulnerability":
+    case "cve":
+      return <BugReport />;
+    case "unauthorized":
+    case "auth":
+      return <WarningAmber />;
+    default:
+      return <SystemUpdate />;
+  }
+};
 
 const getColor = (severity) => {
-  switch (severity) {
-    case "Critical":
+  switch (severity?.toUpperCase()) {
+    case "CRITICAL":
       return "error";
-    case "High":
+    case "HIGH":
       return "warning";
-    case "Medium":
+    case "MEDIUM":
       return "primary";
     default:
       return "success";
   }
 };
 
-function RecentAlerts() {
+function RecentAlerts({ alerts = [] }) {
   return (
     <Paper
       elevation={0}
@@ -78,43 +66,49 @@ function RecentAlerts() {
         Recent Security Alerts
       </Typography>
 
-      <List disablePadding>
-        {alerts.map((alert, index) => (
-          <Box key={index}>
-            <ListItem
-              sx={{ py: 1.5 }}
-              secondaryAction={
-                <Chip
-                  label={alert.severity}
-                  color={getColor(alert.severity)}
-                  size="small"
-                />
-              }
-            >
-              <ListItemAvatar>
-                <Avatar
-                  sx={{
-                    bgcolor: `${getColor(alert.severity)}.main`,
-                  }}
-                >
-                  {alert.icon}
-                </Avatar>
-              </ListItemAvatar>
-
-              <ListItemText
-                primary={
-                  <Typography fontWeight={600}>
-                    {alert.title}
-                  </Typography>
+      {alerts.length === 0 ? (
+        <Typography color="text.secondary" p={2} align="center">
+          No security alerts recorded.
+        </Typography>
+      ) : (
+        <List disablePadding>
+          {alerts.map((alert, index) => (
+            <Box key={alert.id || index}>
+              <ListItem
+                sx={{ py: 1.5 }}
+                secondaryAction={
+                  <Chip
+                    label={alert.severity}
+                    color={getColor(alert.severity)}
+                    size="small"
+                  />
                 }
-                secondary={alert.time}
-              />
-            </ListItem>
+              >
+                <ListItemAvatar>
+                  <Avatar
+                    sx={{
+                      bgcolor: `${getColor(alert.severity)}.main`,
+                    }}
+                  >
+                    {getIcon(alert.category)}
+                  </Avatar>
+                </ListItemAvatar>
 
-            {index !== alerts.length - 1 && <Divider />}
-          </Box>
-        ))}
-      </List>
+                <ListItemText
+                  primary={
+                    <Typography fontWeight={600} noWrap>
+                      {alert.title}
+                    </Typography>
+                  }
+                  secondary={alert.category || "General"}
+                />
+              </ListItem>
+
+              {index !== alerts.length - 1 && <Divider />}
+            </Box>
+          ))}
+        </List>
+      )}
     </Paper>
   );
 }

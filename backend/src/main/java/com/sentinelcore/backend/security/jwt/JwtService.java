@@ -1,5 +1,6 @@
 package com.sentinelcore.backend.security.jwt;
 
+import com.sentinelcore.backend.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Function;
 
 @Service
@@ -16,12 +19,19 @@ public class JwtService {
     private static final String SECRET =
             "sentinelcoreenterpriseapplicationjwtsecretkey2026";
 
-   private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    public String generateToken(String username) {
+    public String generateToken(User user) {
+        List<String> authorities = new ArrayList<>();
+        authorities.add("ROLE_" + user.getRole().name());
+        user.getRole().getPermissions().forEach(permission -> {
+            authorities.add(permission.name());
+        });
 
         return Jwts.builder()
-                .subject(username)
+                .subject(user.getUsername())
+                .claim("role", user.getRole().name())
+                .claim("authorities", authorities)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -37,16 +47,11 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, String username) {
-
         return extractUsername(token).equals(username)
                 && !extractExpiration(token).before(new Date());
     }
 
-    private <T> T extractClaim(
-            String token,
-            Function<Claims, T> resolver
-    ) {
-
+    private <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = Jwts.parser()
                 .verifyWith(key)
                 .build()
@@ -55,5 +60,4 @@ public class JwtService {
 
         return resolver.apply(claims);
     }
-
 }

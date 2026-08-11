@@ -116,7 +116,12 @@ function UserMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            navigate("/profile");
+          }}
+        >
           <ListItemIcon>
             <PersonIcon fontSize="small" />
           </ListItemIcon>

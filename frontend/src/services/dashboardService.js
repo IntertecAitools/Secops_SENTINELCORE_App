@@ -1,26 +1,6 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: "http://localhost:8080/api",
-});
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("sentinelcore_token");
-
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-};
+import API from "./api";
 
 export const getDashboardStats = async () => {
-  const response = await API.get(
-    "/dashboard/stats",
-    getAuthHeaders()
-  );
-
+  const response = await API.get("/dashboard/stats");
   return response.data.data;
 };
-
-export default API;
