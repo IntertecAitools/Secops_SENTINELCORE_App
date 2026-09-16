@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
+import SentinelChatbot from "../components/common/SentinelChatbot";
 
 function MainLayout({ children }) {
   const location = useLocation();
@@ -26,6 +27,9 @@ function MainLayout({ children }) {
       >
         {children}
       </Box>
+
+      {/* Floating Cyber Security AI Assistant */}
+      <SentinelChatbot />
     </Box>
   );
 }
