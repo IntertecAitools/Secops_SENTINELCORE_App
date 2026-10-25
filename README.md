@@ -4,6 +4,89 @@ SentinelCore is an enterprise-grade Security Operations and Infrastructure Monit
 
 ---
 
+## 📁 Project Structure
+
+```
+sentinelcore-security-platform/
+├── frontend/                 # React.js Frontend (Vite + MUI + React Router)
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   │   ├── originkit/    # Originkit components (Fibre Arc background)
+│   │   │   │   └── ui/fibre-arc.jsx
+│   │   │   ├── auth/         # Auth route guards
+│   │   │   ├── cards/        # Stat cards
+│   │   │   ├── charts/       # Recharts visualizations
+│   │   │   ├── common/       # Shared components (chatbot, snackbar, etc.)
+│   │   │   ├── dashboard/    # Dashboard-specific components
+│   │   │   ├── forms/        # Form components
+│   │   │   └── layout/       # Navbar, Logo, SearchBar, UserMenu
+│   │   ├── context/          # React context (ThemeContext)
+│   │   ├── layouts/          # MainLayout wrapper
+│   │   ├── pages/            # Route pages (Dashboard, Login, Assets, etc.)
+│   │   ├── routes/           # AppRoutes configuration
+│   │   ├── services/         # API service layer (Axios)
+│   │   ├── theme/            # MUI theme configuration
+│   │   ├── App.jsx           # Root app component
+│   │   ├── index.css         # Global styles
+│   │   └── main.jsx          # App entry point
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── package.json
+│   └── .env.example          # Environment variables (copy to .env)
+│
+├── backend/                  # Spring Boot Backend (Java 21 + PostgreSQL)
+│   ├── src/
+│   │   └── main/
+│   │       └── java/         # Java source code
+│   ├── pom.xml               # Maven dependencies
+│   ├── mvnw                  # Maven wrapper
+│   └── .env.example          # Environment variables (copy to .env)
+│
+├── docker-compose.yml        # Full stack orchestration
+├── .github/                  # CI/CD workflows
+├── .gitignore
+├── LICENSE.txt
+└── README.md
+```
+
+### Quick Start
+
+1. **Frontend** (`frontend/`):
+   ```bash
+   cd frontend
+   cp .env.example .env
+   npm install
+   npm run dev
+   # Opens at http://localhost:5173
+   ```
+
+2. **Backend** (`backend/`):
+   ```bash
+   cd backend
+   cp .env.example .env
+   ./mvnw spring-boot:run
+   # Runs at http://localhost:8080
+   ```
+
+3. **Docker** (full stack):
+   ```bash
+   docker-compose up --build -d
+   ```
+
+---
+
+## 🎨 Background — Originkit "Fibre Arc"
+
+The app background uses the Originkit **Fibre Arc** WebGL component, installed via:
+
+```bash
+export ORIGINKIT_API_KEY=cmp_live_Z5WJy1GrIw7d2MArtB-qIoA9vOQ8FHG0
+npx originkit@latest add fibre-arc --prompt
+```
+
+The component lives at `frontend/src/components/originkit/ui/fibre-arc.jsx` and is rendered as a full-screen animated background in `frontend/src/layouts/MainLayout.jsx`.
+
+
 ## 🏗️ Architecture Diagrams
 
 ### 1. System Architecture
