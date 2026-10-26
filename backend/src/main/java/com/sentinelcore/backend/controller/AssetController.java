@@ -5,6 +5,7 @@ import com.sentinelcore.backend.entity.Asset;
 import com.sentinelcore.backend.service.AssetService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class AssetController {
         this.assetService = assetService;
     }
 
+    @PreAuthorize("hasAuthority('ASSET_VIEW')")
     @GetMapping
     public ResponseEntity<ApiResponse<List<Asset>>> getAllAssets() {
 
@@ -33,6 +35,7 @@ public class AssetController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ASSET_MANAGE')")
     @PostMapping
     public ResponseEntity<ApiResponse<Asset>> createAsset(@Valid @RequestBody Asset asset) {
 
@@ -47,6 +50,7 @@ public class AssetController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ASSET_VIEW')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Asset>> getAssetById(@PathVariable Long id) {
 
@@ -61,6 +65,7 @@ public class AssetController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ASSET_MANAGE')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Asset>> updateAsset(
             @PathVariable Long id,
@@ -77,6 +82,7 @@ public class AssetController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAuthority('ASSET_MANAGE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteAsset(@PathVariable Long id) {
 

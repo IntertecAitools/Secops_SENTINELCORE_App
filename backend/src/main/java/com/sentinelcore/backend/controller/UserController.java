@@ -22,8 +22,9 @@ public class UserController {
 
     private final UserService userService;
 
+    // INCIDENT_MANAGE is included so the Incidents page can populate its assignee list
     @GetMapping
-    @PreAuthorize("hasAuthority('USER_CREATE') || hasAuthority('USER_EDIT')")
+    @PreAuthorize("hasAuthority('USER_CREATE') || hasAuthority('USER_EDIT') || hasAuthority('INCIDENT_MANAGE')")
     public ResponseEntity<ApiResponse<Page<UserDTO>>> getUsers(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String role,
@@ -83,7 +84,7 @@ public class UserController {
             @RequestBody java.util.Map<String, String> payload) {
         String newPassword = payload.get("newPassword");
         if (newPassword == null || newPassword.trim().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be empty");
+            throw new com.sentinelcore.backend.exception.BadRequestException("Password cannot be empty");
         }
         UserDTO updated = userService.resetPassword(id, newPassword);
         return ResponseEntity.ok(ApiResponse.success("User password reset successfully", updated));

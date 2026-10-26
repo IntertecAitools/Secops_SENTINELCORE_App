@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class IncidentController {
 
     private final IncidentService incidentService;
 
+    @PreAuthorize("hasAuthority('INCIDENT_VIEW')")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<IncidentDTO>>> getIncidents(
             @RequestParam(required = false) String search,
@@ -35,24 +37,28 @@ public class IncidentController {
         return ResponseEntity.ok(ApiResponse.success("Incidents retrieved successfully", incidents));
     }
 
+    @PreAuthorize("hasAuthority('INCIDENT_VIEW')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<IncidentDTO>> getIncidentById(@PathVariable Long id) {
         IncidentDTO incident = incidentService.getIncidentById(id);
         return ResponseEntity.ok(ApiResponse.success("Incident retrieved successfully", incident));
     }
 
+    @PreAuthorize("hasAuthority('INCIDENT_MANAGE')")
     @PostMapping
     public ResponseEntity<ApiResponse<IncidentDTO>> createIncident(@RequestBody IncidentDTO dto) {
         IncidentDTO saved = incidentService.createIncident(dto);
         return ResponseEntity.ok(ApiResponse.success("Incident created successfully", saved));
     }
 
+    @PreAuthorize("hasAuthority('INCIDENT_MANAGE')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<IncidentDTO>> updateIncident(@PathVariable Long id, @RequestBody IncidentDTO dto) {
         IncidentDTO updated = incidentService.updateIncident(id, dto);
         return ResponseEntity.ok(ApiResponse.success("Incident updated successfully", updated));
     }
 
+    @PreAuthorize("hasAuthority('INCIDENT_MANAGE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteIncident(@PathVariable Long id) {
         incidentService.deleteIncident(id);

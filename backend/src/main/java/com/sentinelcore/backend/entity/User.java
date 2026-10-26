@@ -51,4 +51,11 @@ public class User {
 
     @Column
     private LocalDateTime createdAt;
+
+    /**
+     * Tenant this user belongs to. Null means the single built-in tenant ("default"), which keeps
+     * every pre-existing account working without a data migration. Only SUPER_ADMIN can change it.
+     */
+    @Column(name = "tenant_key", length = 64)
+    private String tenantKey;
 }

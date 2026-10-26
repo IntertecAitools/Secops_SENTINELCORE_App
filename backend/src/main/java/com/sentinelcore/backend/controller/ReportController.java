@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    @PreAuthorize("hasAuthority('REPORT_VIEW')")
     @GetMapping("/assets/csv")
     public ResponseEntity<byte[]> downloadAssetsCSV() {
         byte[] csvData = reportService.exportAssetsToCSV();
@@ -27,6 +29,7 @@ public class ReportController {
                 .body(csvData);
     }
 
+    @PreAuthorize("hasAuthority('REPORT_VIEW')")
     @GetMapping("/alerts/csv")
     public ResponseEntity<byte[]> downloadAlertsCSV() {
         byte[] csvData = reportService.exportAlertsToCSV();
@@ -36,6 +39,7 @@ public class ReportController {
                 .body(csvData);
     }
 
+    @PreAuthorize("hasAuthority('REPORT_VIEW')")
     @GetMapping("/assets/excel")
     public ResponseEntity<byte[]> downloadAssetsExcel() throws IOException {
         byte[] excelData = reportService.exportAssetsToExcel();
@@ -45,6 +49,7 @@ public class ReportController {
                 .body(excelData);
     }
 
+    @PreAuthorize("hasAuthority('REPORT_VIEW')")
     @GetMapping("/incidents/excel")
     public ResponseEntity<byte[]> downloadIncidentsExcel() throws IOException {
         byte[] excelData = reportService.exportIncidentsToExcel();
@@ -54,6 +59,7 @@ public class ReportController {
                 .body(excelData);
     }
 
+    @PreAuthorize("hasAuthority('REPORT_VIEW')")
     @GetMapping("/incidents/pdf")
     public ResponseEntity<byte[]> downloadIncidentsPDF() {
         byte[] pdfData = reportService.exportIncidentsToPDF();

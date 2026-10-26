@@ -8,12 +8,12 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Aspect
 @Component
@@ -38,19 +38,25 @@ public class AuditLoggingAspect {
             String className = joinPoint.getTarget().getClass().getSimpleName();
             String action = className + "." + methodName;
 
-            String username = "ANONYMOUS";
-            if (SecurityContextHolder.getContext().getAuthentication() != null) {
-                username = SecurityContextHolder.getContext().getAuthentication().getName();
-            }
+            String username = AuditLogService.currentUsername();
 
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             String ipAddress = "0.0.0.0";
-            if (attributes != null) {
+            String requestLine = "";
+            if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes) {
                 HttpServletRequest request = attributes.getRequest();
                 ipAddress = request.getRemoteAddr();
+                requestLine = request.getMethod() + " " + request.getRequestURI();
             }
 
-            String details = "Executed action: " + action + " with args: " + Arrays.toString(joinPoint.getArgs());
+            // Request bodies are never serialized into the audit trail: they can contain passwords
+            // or other sensitive values. Only identifiers are recorded.
+            List<Object> identifiers = Arrays.stream(joinPoint.getArgs())
+                    .filter(arg -> arg instanceof Long || arg instanceof Integer)
+                    .toList();
+
+            String details = "Executed action: " + action
+                    + (requestLine.isEmpty() ? "" : " (" + requestLine + ")")
+                    + (identifiers.isEmpty() ? "" : " ids=" + identifiers);
 
             auditLogService.logAction(action, username, details, ipAddress);
         } catch (Exception e) {

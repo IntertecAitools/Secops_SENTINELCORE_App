@@ -21,15 +21,21 @@ API.interceptors.request.use(
   }
 );
 
-// Response Interceptor: Catch 401 & 403 errors and force logout
+const isAuthEndpoint = (config) => (config?.url || "").startsWith("/auth/");
+
+// Response Interceptor: a 401 means the session is missing or expired, so log out.
+// A 403 means the user is authenticated but lacks permission for that one action: keep the
+// session and let the calling page show the error.
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.warn("Unauthorized or Forbidden request. Logging out user...");
+    if (error.response && error.response.status === 401 && !isAuthEndpoint(error.config)) {
+      console.warn("Session expired or invalid. Logging out user...");
       localStorage.removeItem("sentinelcore_token");
       localStorage.removeItem("sentinelcore_user");
-      
+      localStorage.removeItem("sentinelcore_role");
+      localStorage.removeItem("sentinelcore_permissions");
+
       // Avoid infinite redirects if already on login page
       if (!window.location.pathname.includes("/login")) {
         window.location.href = "/login?session_expired=true";
@@ -38,5 +44,13 @@ API.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+/** User-safe message from an API error (backend returns { success, message, data }). */
+export const apiErrorMessage = (error, fallback = "Request failed") => {
+  if (error?.response?.status === 403) {
+    return error.response.data?.message || "You do not have permission to perform this action";
+  }
+  return error?.response?.data?.message || fallback;
+};
 
 export default API;

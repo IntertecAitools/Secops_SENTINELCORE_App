@@ -18,10 +18,10 @@ public class AssetControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void testGetAssetsWithoutToken_Returns403() throws Exception {
-        // Without authentication, accessing protected resource should return 403 Forbidden or 401 Unauthorized
+    void testGetAssetsWithoutToken_Returns401() throws Exception {
+        // Unauthenticated requests are rejected with 401 (previously the default 403 entry point)
         mockMvc.perform(get("/api/assets")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }

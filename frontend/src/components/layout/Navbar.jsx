@@ -29,6 +29,7 @@ import {
   FlashOn,
   Security,
   FormatListBulleted,
+  CloudQueue,
 } from "@mui/icons-material";
 
 import { Link, useLocation } from "react-router-dom";
@@ -105,6 +106,12 @@ function Navbar() {
       path: "/patch-management",
       icon: <FlashOn fontSize="small" color="success" />,
       allowedRoles: ["SUPER_ADMIN", "VULNERABILITY_MANAGER"],
+    },
+    {
+      text: "Cloud Security",
+      path: "/cloud-security",
+      icon: <CloudQueue fontSize="small" color="info" />,
+      allowedRoles: ["SUPER_ADMIN", "ADMIN", "SECURITY_ANALYST", "VULNERABILITY_MANAGER", "AUDITOR"],
     },
   ];
 

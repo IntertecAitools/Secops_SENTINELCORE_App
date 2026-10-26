@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class RiskAssessmentController {
 
     private final RiskAssessmentService riskAssessmentService;
 
+    @PreAuthorize("hasAuthority('RISK_VIEW')")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<RiskAssessmentDTO>>> getRiskAssessments(
             @RequestParam(required = false) String search,
@@ -33,24 +35,28 @@ public class RiskAssessmentController {
         return ResponseEntity.ok(ApiResponse.success("Risk Assessments retrieved successfully", assessments));
     }
 
+    @PreAuthorize("hasAuthority('RISK_VIEW')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<RiskAssessmentDTO>> getRiskAssessmentById(@PathVariable Long id) {
         RiskAssessmentDTO assessment = riskAssessmentService.getRiskAssessmentById(id);
         return ResponseEntity.ok(ApiResponse.success("Risk Assessment retrieved successfully", assessment));
     }
 
+    @PreAuthorize("hasAuthority('RISK_MANAGE')")
     @PostMapping
     public ResponseEntity<ApiResponse<RiskAssessmentDTO>> createRiskAssessment(@RequestBody RiskAssessmentDTO dto) {
         RiskAssessmentDTO saved = riskAssessmentService.createRiskAssessment(dto);
         return ResponseEntity.ok(ApiResponse.success("Risk Assessment created successfully", saved));
     }
 
+    @PreAuthorize("hasAuthority('RISK_MANAGE')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<RiskAssessmentDTO>> updateRiskAssessment(@PathVariable Long id, @RequestBody RiskAssessmentDTO dto) {
         RiskAssessmentDTO updated = riskAssessmentService.updateRiskAssessment(id, dto);
         return ResponseEntity.ok(ApiResponse.success("Risk Assessment updated successfully", updated));
     }
 
+    @PreAuthorize("hasAuthority('RISK_MANAGE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteRiskAssessment(@PathVariable Long id) {
         riskAssessmentService.deleteRiskAssessment(id);

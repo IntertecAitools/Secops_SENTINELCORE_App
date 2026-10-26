@@ -13,6 +13,7 @@ import Vulnerabilities from "../pages/Vulnerabilities/Vulnerabilities";
 import ThreatIntel from "../pages/ThreatIntel/ThreatIntel";
 import RiskAssessment from "../pages/RiskAssessment/RiskAssessment";
 import PatchManagement from "../pages/PatchManagement/PatchManagement";
+import CloudSecurity from "../pages/CloudSecurity/CloudSecurity";
 import AuditLogs from "../pages/AuditLogs/AuditLogs";
 import Reports from "../pages/Reports/Reports";
 import Settings from "../pages/Settings/Settings";
@@ -110,6 +111,14 @@ function AppRoutes() {
                     element={
                       <RoleProtectedRoute allowedRoles={["SUPER_ADMIN", "VULNERABILITY_MANAGER"]}>
                         <PatchManagement />
+                      </RoleProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="cloud-security"
+                    element={
+                      <RoleProtectedRoute allowedRoles={["SUPER_ADMIN", "ADMIN", "SECURITY_ANALYST", "VULNERABILITY_MANAGER", "AUDITOR"]}>
+                        <CloudSecurity />
                       </RoleProtectedRoute>
                     }
                   />

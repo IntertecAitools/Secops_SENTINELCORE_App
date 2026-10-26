@@ -2,6 +2,7 @@ package com.sentinelcore.backend.security.filter;
 
 import com.sentinelcore.backend.security.jwt.JwtService;
 import com.sentinelcore.backend.security.service.CustomUserDetailsService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
@@ -37,15 +38,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String token = authHeader.substring(7);
-            String username = jwtService.extractUsername(token);
+            // Validates signature, expiry, issuer and audience
+            Claims claims = jwtService.parseAndValidate(token);
+            String username = claims.getSubject();
 
             if (username != null &&
                     SecurityContextHolder.getContext().getAuthentication() == null) {
 
+                // Authorities are reloaded from the database, never trusted from the token
                 UserDetails userDetails =
                         userDetailsService.loadUserByUsername(username);
 
-                if (jwtService.isTokenValid(token, userDetails.getUsername())) {
+                if (userDetails.isEnabled()
+                        && userDetails.isAccountNonLocked()
+                        && jwtService.isTokenValid(token, userDetails.getUsername())) {
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
@@ -63,8 +69,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            // Log warning but continue filter chain without authentication
-            logger.warn("JWT validation failed: " + e.getMessage());
+            // Continue unauthenticated; do not log token contents
+            logger.warn("JWT validation failed: " + e.getClass().getSimpleName());
         }
 
         filterChain.doFilter(request, response);

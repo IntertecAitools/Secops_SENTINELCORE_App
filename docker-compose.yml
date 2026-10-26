@@ -1,19 +1,21 @@
-version: '3.8'
+# SentinelCore full stack: PostgreSQL + Spring Boot API + React/nginx frontend.
+# Configure via a .env file next to this file (copy .env.example) or host environment variables.
 
 services:
   postgres:
     image: postgres:15-alpine
     container_name: sentinelcore-db
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: sentinelcore_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-sentinelcore_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d sentinelcore_db"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,23 +23,44 @@ services:
   backend:
     build: ./backend
     container_name: sentinelcore-backend
+    restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sentinelcore_db
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-sentinelcore_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL:-false}
+      JWT_SECRET: ${JWT_SECRET:-}
+      # The browser reaches the API through the frontend's nginx proxy (same origin); these only
+      # matter when calling the API on port 8080 directly from another origin.
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost,http://127.0.0.1,http://localhost:5173}
+      APP_BOOTSTRAP_ADMIN_USERNAME: ${APP_BOOTSTRAP_ADMIN_USERNAME:-}
+      APP_BOOTSTRAP_ADMIN_PASSWORD: ${APP_BOOTSTRAP_ADMIN_PASSWORD:-}
+      APP_BOOTSTRAP_ADMIN_EMAIL: ${APP_BOOTSTRAP_ADMIN_EMAIL:-}
+      APP_DEMO_USERS_ENABLED: ${APP_DEMO_USERS_ENABLED:-false}
+      APP_SELF_REGISTRATION_ENABLED: ${APP_SELF_REGISTRATION_ENABLED:-false}
+      # Cloud security (see docs/cloud-security.md). AWS credentials come from the standard
+      # credential chain; e.g. pass AWS_PROFILE and mount ~/.aws read-only. Never hardcode keys.
+      APP_CLOUD_AWS_ENABLED: ${APP_CLOUD_AWS_ENABLED:-false}
+      APP_CLOUD_AWS_DEFAULT_REGION: ${APP_CLOUD_AWS_DEFAULT_REGION:-us-east-1}
+      APP_CLOUD_REMEDIATION_EXECUTION_ENABLED: ${APP_CLOUD_REMEDIATION_EXECUTION_ENABLED:-false}
     depends_on:
       postgres:
         condition: service_healthy
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
     container_name: sentinelcore-frontend
+    restart: unless-stopped
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   postgres_data:

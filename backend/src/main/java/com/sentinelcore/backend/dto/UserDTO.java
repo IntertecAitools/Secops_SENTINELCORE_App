@@ -34,4 +34,7 @@ public class UserDTO {
     private LocalDateTime lastLogin;
 
     private LocalDateTime createdAt;
+
+    // Tenant assignment; only honoured on writes performed by a SUPER_ADMIN
+    private String tenantKey;
 }

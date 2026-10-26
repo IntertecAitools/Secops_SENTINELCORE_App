@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class AlertController {
 
     private final AlertService alertService;
 
+    @PreAuthorize("hasAuthority('ALERT_VIEW')")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<AlertDTO>>> getAlerts(
             @RequestParam(required = false) String search,
@@ -37,24 +39,28 @@ public class AlertController {
         return ResponseEntity.ok(ApiResponse.success("Alerts retrieved successfully", alerts));
     }
 
+    @PreAuthorize("hasAuthority('ALERT_VIEW')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AlertDTO>> getAlertById(@PathVariable Long id) {
         AlertDTO alert = alertService.getAlertById(id);
         return ResponseEntity.ok(ApiResponse.success("Alert retrieved successfully", alert));
     }
 
+    @PreAuthorize("hasAuthority('ALERT_MANAGE')")
     @PostMapping
     public ResponseEntity<ApiResponse<AlertDTO>> createAlert(@RequestBody AlertDTO dto) {
         AlertDTO saved = alertService.createAlert(dto);
         return ResponseEntity.ok(ApiResponse.success("Alert created successfully", saved));
     }
 
+    @PreAuthorize("hasAuthority('ALERT_MANAGE')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<AlertDTO>> updateAlert(@PathVariable Long id, @RequestBody AlertDTO dto) {
         AlertDTO updated = alertService.updateAlert(id, dto);
         return ResponseEntity.ok(ApiResponse.success("Alert updated successfully", updated));
     }
 
+    @PreAuthorize("hasAuthority('ALERT_MANAGE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteAlert(@PathVariable Long id) {
         alertService.deleteAlert(id);

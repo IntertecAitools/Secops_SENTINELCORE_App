@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class ThreatIntelController {
 
     private final ThreatIntelService threatIntelService;
 
+    @PreAuthorize("hasAuthority('THREAT_INTEL_VIEW')")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<ThreatIntelDTO>>> getThreatIntels(
             @RequestParam(required = false) String search,
@@ -35,24 +37,28 @@ public class ThreatIntelController {
         return ResponseEntity.ok(ApiResponse.success("Threat Intelligence feeds retrieved successfully", threatIntels));
     }
 
+    @PreAuthorize("hasAuthority('THREAT_INTEL_VIEW')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ThreatIntelDTO>> getThreatIntelById(@PathVariable Long id) {
         ThreatIntelDTO intel = threatIntelService.getThreatIntelById(id);
         return ResponseEntity.ok(ApiResponse.success("Threat Intel retrieved successfully", intel));
     }
 
+    @PreAuthorize("hasAuthority('THREAT_INTEL_MANAGE')")
     @PostMapping
     public ResponseEntity<ApiResponse<ThreatIntelDTO>> createThreatIntel(@RequestBody ThreatIntelDTO dto) {
         ThreatIntelDTO saved = threatIntelService.createThreatIntel(dto);
         return ResponseEntity.ok(ApiResponse.success("Threat Intel created successfully", saved));
     }
 
+    @PreAuthorize("hasAuthority('THREAT_INTEL_MANAGE')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ThreatIntelDTO>> updateThreatIntel(@PathVariable Long id, @RequestBody ThreatIntelDTO dto) {
         ThreatIntelDTO updated = threatIntelService.updateThreatIntel(id, dto);
         return ResponseEntity.ok(ApiResponse.success("Threat Intel updated successfully", updated));
     }
 
+    @PreAuthorize("hasAuthority('THREAT_INTEL_MANAGE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> deleteThreatIntel(@PathVariable Long id) {
         threatIntelService.deleteThreatIntel(id);
