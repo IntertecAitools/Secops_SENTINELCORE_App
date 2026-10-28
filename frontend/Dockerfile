@@ -1,6 +1,11 @@
 # Build stage (Vite 8 requires Node 20.19+ / 22.12+)
 FROM node:22-alpine AS build
 WORKDIR /app
+# Optional outbound proxy for restricted networks (Docker Desktop: http://http.docker.internal:3128).
+ARG HTTP_PROXY=""
+ARG HTTPS_PROXY=""
+ARG NO_PROXY=""
+ENV HTTP_PROXY=${HTTP_PROXY} HTTPS_PROXY=${HTTPS_PROXY} NO_PROXY=${NO_PROXY}
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
